@@ -37,7 +37,8 @@ messages.
 
 ## Demo
 
-<video controls src="demo chat.mov" title="Title"></video>
+ [demo here](https://github.com/mchavez/Chatroom/blob/main/demo.mov)
+<video controls src="demo.mov" title="Title"></video>
 
 ---
 
