@@ -68,8 +68,14 @@ chat-app/
 │   ├── main.go
 │   ├── mock_auth.go
 │   ├── service.go
-|   └── migrations/
-|       └── 001_init.sql # Initial migration file
+|   ├──  migrations/
+|   |   └── 001_init.sql # Initial migration file
+|   ├── middleware/
+|   |    └── middleware.go 
+|   ├── utils/
+|   |    └── helper.go 
+|   └── docs/
+|       └── go-financial-chat.pdf 
 ├── client/
 │   ├── package.json # proxy http://localhost:8080/ for dev
 │   ├── package-lock.json
