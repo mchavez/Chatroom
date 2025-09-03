@@ -37,7 +37,7 @@ messages.
 
 ## Demo
 
-If you cannot see the demo video, please download the file named [demo.mov](demo.mov) included in the root directory.
+If you cannot see the video, please download the file named [demo.mov](demo.mov) included in the root directory.
 <video controls src="demo.mov" title="Title"></video>
 
 ---
