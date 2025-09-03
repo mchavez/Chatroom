@@ -37,7 +37,7 @@ messages.
 
 ## Demo
 
- [demo here](https://github.com/mchavez/Chatroom/blob/main/demo.mov)
+If you cannot see the demo video, please download the file named [demo.mov](demo.mov) included in the root directory.
 <video controls src="demo.mov" title="Title"></video>
 
 ---
