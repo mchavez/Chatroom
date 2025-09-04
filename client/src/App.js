@@ -51,7 +51,7 @@ function App() {
 
   return (
     <div style={{ paddingLeft: "10%",  paddingRight: "5%" }}>
-      {!credentials.username ? renderLoginOrRegister() : (
+      {!credentials.username && !credentials.token ? renderLoginOrRegister() : (
         <>
           {!joined ? renderChatInput() : 
           <Chat username={credentials.username} token={credentials.token} room={room} />}
