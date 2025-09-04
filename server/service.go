@@ -1,4 +1,3 @@
-// service.go
 package main
 
 type AuthServiceImpl struct{}
