@@ -17,14 +17,14 @@ func botStockInit() {
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ botInit -> bot: %v %v", err.Error(), rabbitConn)
 	}
-	defer rabbitConn.Close()
+	defer rabbitConn.Close() // nolint:errcheck
 
 	log.Println("RabbitMQ(Bot) connection is ready...")
 	ch, err := rabbitConn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a RabbitMQ channel: %v", err)
 	}
-	defer ch.Close()
+	defer ch.Close() // nolint:errcheck
 
 	q, err := ch.QueueDeclare(utils.StockQueue, false, false, false, false, nil) // Add stock queue to rabbitMQ
 	if err != nil {
@@ -58,7 +58,10 @@ func handleBotMessage(d amqp.Delivery) {
 
 	text := fmt.Sprintf("%s quote is $%s per share", strings.ToUpper(stockCode), quote)
 	log.Printf("%s", text)
-	utils.PublishQueueMessage(room, text, utils.ChatQueue)
+	err = utils.PublishQueueMessage(room, text, utils.ChatQueue)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 // fetchStockQuote retrieves the closing stock price for a given stock code.
@@ -69,7 +72,7 @@ func fetchStockQuote(code string) (string, error) {
 		return "N/A", fmt.Errorf("failed to fetch stock quote: %w", err)
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint:errcheck
 	if resp.StatusCode != http.StatusOK {
 		return "N/A", fmt.Errorf("received non-200 response: %d", resp.StatusCode)
 	}

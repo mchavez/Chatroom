@@ -54,7 +54,13 @@ func listRoomsHandler(w http.ResponseWriter, r *http.Request) {
 		rooms = append(rooms, room)
 	}
 
-	json.NewEncoder(w).Encode(rooms)
+	// Create a new JSON encoder writing to w
+	encoder := json.NewEncoder(w)
+	err := encoder.Encode(rooms)
+	if err != nil {
+		http.Error(w, "failed to encode rooms", http.StatusInternalServerError)
+		return
+	}
 }
 
 func main() {
@@ -115,7 +121,7 @@ func handleServerConnections(w http.ResponseWriter, r *http.Request) {
 		log.Println("upgrade:", err)
 		return
 	}
-	defer ws.Close()
+	defer ws.Close() // nolint:errcheck
 
 	// Ensure room exists (getOrCreateChatroom)
 	room, exists := chatrooms[roomName]
@@ -151,7 +157,7 @@ func handleServerConnections(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(rawMsg, "/stock=") {
 			stockCode := strings.TrimSpace(strings.TrimPrefix(rawMsg, "/stock="))
 			if stockCode != "" {
-				go utils.PublishQueueMessage(roomName, stockCode, utils.StockQueue)
+				go utils.PublishQueueMessage(roomName, stockCode, utils.StockQueue) // nolint:errcheck
 			}
 		}
 
@@ -169,7 +175,10 @@ func addServerMessage(room *Chatroom, msg Message) {
 
 func broadcastServerMessage(room *Chatroom, msg Message) {
 	for client := range room.Clients {
-		client.WriteJSON(msg)
+		err := client.WriteJSON(msg)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
@@ -178,14 +187,14 @@ func consumeServerMessages() {
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ consumeServerMessages -> server: %v %v", err, rabbitmqConn)
 	}
-	defer rabbitmqConn.Close()
+	defer rabbitmqConn.Close() // nolint:errcheck
 
 	log.Println("RabbitMQ(server) connection is ready...")
 	ch, err := rabbitmqConn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %v", err)
 	}
-	defer ch.Close()
+	defer ch.Close() // nolint:errcheck
 
 	q, err := ch.QueueDeclare(utils.ChatQueue, false, false, false, false, nil)
 	if err != nil {

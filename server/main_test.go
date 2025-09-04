@@ -142,7 +142,15 @@ func TestRegister_Success(t *testing.T) {
 	}
 
 	var resp map[string]string
-	json.NewDecoder(w.Body).Decode(&resp)
+	// Create a new JSON encoder writing to w
+	encoder := json.NewEncoder(w.Body)
+	err := encoder.Encode(&resp)
+	if err != nil {
+		http.Error(w, "failed to encode resp", http.StatusInternalServerError)
+		return
+	}
+
+	// json.NewDecoder(w.Body).Decode(&resp)
 	if resp["username"] != "bob" {
 		t.Errorf("expected username bob, got %s", resp["username"])
 	}

@@ -19,13 +19,13 @@ func PublishQueueMessage(roomName, msg, queueName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to RabbitMQ publishStockCommand -> server: %w", err)
 	}
-	defer rabbitmqConn.Close()
+	defer rabbitmqConn.Close() // nolint:errcheck
 
 	ch, err := rabbitmqConn.Channel()
 	if err != nil {
 		return fmt.Errorf("failed to open a channel: %w", err)
 	}
-	defer ch.Close()
+	defer ch.Close() // nolint:errcheck
 
 	q, err := ch.QueueDeclare(
 		queueName, // name

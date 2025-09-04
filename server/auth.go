@@ -73,7 +73,13 @@ func (h *AuthHandler) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{"token": token})
+	// Create a new JSON encoder writing to w
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(map[string]string{"token": token})
+	if err != nil {
+		http.Error(w, "failed to encode token", http.StatusInternalServerError)
+		return
+	}
 }
 
 // HTTP handlers (register) endpoint
@@ -106,13 +112,20 @@ func (h *AuthHandler) registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"token": token, "username": creds.Username})
+
+	// Create a new JSON encoder writing to w
+	encoder := json.NewEncoder(w)
+	err = encoder.Encode(map[string]string{"token": token, "username": creds.Username})
+	if err != nil {
+		http.Error(w, "failed to encode token", http.StatusInternalServerError)
+		return
+	}
 }
 
 func FindUser(username string) (*User, error) {
 	var (
 		user     User
-		strQuery string = "SELECT id, username, password_hash FROM users WHERE username=$1"
+		strQuery = "SELECT id, username, password_hash FROM users WHERE username=$1"
 	)
 	row := db.QueryRow(context.Background(), strQuery, username)
 	if err := row.Scan(&user.ID, &user.Username, &user.PasswordHash); err != nil {
